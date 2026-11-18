@@ -1,0 +1,18 @@
+services:
+  experiment:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: llm-experiment
+    working_dir: /work
+    volumes:
+      - .:/work
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${XAUTHORITY:-${HOME}/.Xauthority}:/tmp/.Xauthority:ro
+    environment:
+      DISPLAY: ${DISPLAY}
+      XAUTHORITY: /tmp/.Xauthority
+      HOME: /tmp
+      PROTEUMIMHOME: /work/tools/ProteumIM64/bin
+    stdin_open: true
+    tty: true

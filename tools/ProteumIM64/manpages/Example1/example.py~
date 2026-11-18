@@ -1,0 +1,9 @@
+# this script is an example on how to use Proteu programs
+# to create and manage a test session.
+# it uses an implementation of the Unix cal program  
+# it simply creates a test session, generate all mutants,
+# mark those that are equivalent and then inserts a few
+# test cases.
+# the mutants are executed and a report is created.
+
+

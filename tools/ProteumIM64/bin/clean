@@ -1,0 +1,11 @@
+# Escript de limpeza 
+
+
+rm ../obj/*
+
+rm -f exemuta li muta muta-gen muta-view opmuta pteste report tcase tcase-add test-new headtail list-good recinput extimout splitarg instrum 
+
+
+#cd ~/proteumIM2.0/SUNOS5/bin
+#rm -f exemuta li muta muta-gen muta-view opmuta pteste report tcase tcase-add test-new headtail list-good recinput extimout splitarg instrum 
+
