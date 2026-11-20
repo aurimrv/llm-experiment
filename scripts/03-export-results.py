@@ -86,6 +86,55 @@ def load_operators(program_dir: Path, session: str) -> dict[int, str]:
     return operators
 
 
+def load_id_list(path: Path) -> list[int]:
+    """Read one mutant number per line, keeping the first occurrence of each number."""
+    if not path.is_file():
+        return []
+    ids: list[int] = []
+    seen: set[int] = set()
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        text = line.split("#", 1)[0].strip()
+        if not text:
+            continue
+        try:
+            mutant_id = int(text)
+        except ValueError as exc:
+            raise SystemExit(f"{path}:{line_number} is not a mutant number") from exc
+        if mutant_id in seen:
+            continue
+        seen.add(mutant_id)
+        ids.append(mutant_id)
+    return ids
+
+
+def classified_status(program_dir: Path) -> dict[int, str]:
+    """Status for mutants the model is not asked about."""
+    mutants_dir = program_dir / "mutants"
+    status: dict[int, str] = {}
+    for mutant_id in load_id_list(mutants_dir / "anomalous.txt"):
+        status[mutant_id] = "anomalous"
+    for mutant_id in load_id_list(mutants_dir / "equivalents-trivial.txt"):
+        status.setdefault(mutant_id, "equivalent-trivial")
+    return status
+
+
+def merge_records(records: list[dict], preclassified: dict[int, str]) -> list[dict]:
+    """Keep the latest model result for each mutant, then add the preclassified mutants."""
+    latest: dict[int, dict] = {}
+    for record in records:
+        mutant_id = record.get("mutant_id")
+        if isinstance(mutant_id, int):
+            latest[mutant_id] = record
+    for mutant_id, status in preclassified.items():
+        if mutant_id in latest:
+            updated = dict(latest[mutant_id])
+            updated["status"] = status
+            latest[mutant_id] = updated
+        else:
+            latest[mutant_id] = {"mutant_id": mutant_id, "status": status}
+    return [latest[mutant_id] for mutant_id in sorted(latest)]
+
+
 def cell(value) -> str:
     if value is None:
         return ""
@@ -173,7 +222,7 @@ def distinct_inputs(records: list[dict]) -> list[tuple[str, str]]:
 def export_results(program_dir: Path, json_path: Path, session: str, test_dir_name: str) -> None:
     records = load_rows(json_path)
     operators = load_operators(program_dir, session)
-    table = [csv_row(record, operators) for record in records]
+    table = [csv_row(record, operators) for record in merge_records(records, classified_status(program_dir))]
     csv_path = program_dir / "result" / f"{json_path.stem}.csv"
     write_csv(csv_path, table)
     test_dir = program_dir / test_dir_name

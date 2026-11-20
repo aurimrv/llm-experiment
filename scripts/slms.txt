@@ -1,0 +1,14 @@
+ollama,qwen3.5:9b
+ollama,qwen3.5:4b
+ollama,ollama,ministral-3:8b
+ollama,ministral-3:3b
+ollama,nemotron-3-nano:4b
+ollama,phi3.5:3.8b
+ollama,granite-code:3b
+ollama,deepseek-coder:1.3b
+ollama,codegemma:2b
+ollama,qwen2.5-coder:3b
+ollama,qwen2.5-coder:1.5b
+ollama,qwen2.5-coder:0.5b
+ollama,phi3:mini
+openrouter,nvidia/nemotron-3-ultra-550b-a55b:free

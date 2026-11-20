@@ -1,0 +1,10 @@
+PROTEUM - PROGRAM TEST FILE
+Nov-18-26
+V 2.1 - IM
+              
+factorial
+runner
+gcc factorial.c -o runner -lm -w -std=gnu89
+Test
+<N O  A N O M A L I E S>
+<A L L   F U N C T I O N S>

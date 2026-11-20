@@ -1,0 +1,15 @@
+order,provider,model,label,program,judged,suggestions,suggestion_rate,suggestion_low,suggestion_high,true_positive,false_positive,false_negative,precision,precision_low,precision_high,recall,recall_low,recall_high,mutation_score,score_check,alive,proteum_equivalent,anomalous,total_mutants,unique_tests,judged_hand_equivalents
+1,ollama,qwen3.5:9b,qwen3.5:9b,programs/factorial-qwen3.5-9b,210,3,0.01428571429,0.004870115342,0.0411521054,3,0,14,1,0.4385029682,1,0.1764705882,0.06191126638,0.4102945857,0.914286,0.9142857143,18,2,30,242,7,17
+2,ollama,qwen3.5:4b,qwen3.5:4b,programs/factorial-qwen3.5-4b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.914286,0.9142857143,18,2,30,242,7,17
+3,ollama,ministral-3:8b,ministral-3:8b,programs/factorial-ministral-3-8b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.928571,0.9285714286,15,2,30,242,7,17
+4,ollama,ministral-3:3b,ministral-3:3b,programs/factorial-ministral-3-3b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.247619,0.2476190476,158,2,30,242,3,17
+5,ollama,nemotron-3-nano:4b,nemotron-3-nano:4b,programs/factorial-nemotron-3-nano-4b,210,10,0.04761904762,0.02606841647,0.08542286755,5,5,12,0.5,0.2365930905,0.7634069095,0.2941176471,0.1327998961,0.5313311007,0.914286,0.9142857143,18,2,30,242,9,17
+6,ollama,phi3.5:3.8b,phi3.5:3.8b,programs/factorial-phi3.5-3.8b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.914286,0.9142857143,18,2,30,242,5,17
+7,ollama,granite-code:3b,granite-code:3b,programs/factorial-granite-code-3b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.771429,0.7714285714,48,2,30,242,2,17
+8,ollama,deepseek-coder:1.3b,deepseek-coder:1.3b,programs/factorial-deepseek-coder-1.3b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.771429,0.7714285714,48,2,30,242,7,17
+9,ollama,codegemma:2b,codegemma:2b,programs/factorial-codegemma-2b,210,210,1,0.9820359492,1,17,193,0,0.08095238095,0.05115489073,0.1258054566,1,0.815681865,1,0.633333,0.6333333333,77,2,30,242,1,17
+10,ollama,qwen2.5-coder:3b,qwen2.5-coder:3b,programs/factorial-qwen2.5-coder-3b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.242857,0.2428571429,159,2,30,242,1,17
+11,ollama,qwen2.5-coder:1.5b,qwen2.5-coder:1.5b,programs/factorial-qwen2.5-coder-1.5b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.480952,0.480952381,109,2,30,242,2,17
+12,ollama,qwen2.5-coder:0.5b,qwen2.5-coder:0.5b,programs/factorial-qwen2.5-coder-0.5b,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.633333,0.6333333333,77,2,30,242,1,17
+13,ollama,phi3:mini,phi3:mini,programs/factorial-phi3-mini,210,0,0.0,0.0,0.01796405076,0,0,17,NA,NA,NA,0.0,0.0,0.184318135,0.480952,0.480952381,109,2,30,242,3,17
+14,openrouter,nvidia/nemotron-3-ultra-550b-a55b:free,nemotron-3-ultra-550b-a55b:free,programs/factorial-nemotron-3-ultra-550b-a55b-free,210,16,0.07619047619,0.04743938772,0.1201682363,16,0,1,1,0.8063923195,1,0.9411764706,0.7301796936,0.989539599,0.919048,0.919047619,17,2,30,242,8,17

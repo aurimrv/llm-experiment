@@ -77,7 +77,9 @@ class Settings:
     exec_timeout: float
     openrouter_key: str
     openrouter_base: str
+    openrouter_reasoning: bool
     ollama_base: str
+    ollama_think: bool
 
 
 class Pace:
@@ -119,6 +121,17 @@ def env_float(name: str, default: float) -> float:
         raise SystemExit(f"{name} must be a number, got {raw!r}") from exc
 
 
+def env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name, "").strip().lower()
+    if not raw:
+        return default
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    raise SystemExit(f"{name} must be true or false, got {raw!r}")
+
+
 def env_int(name: str, default: int) -> int:
     raw = os.environ.get(name, "").strip()
     if not raw:
@@ -152,7 +165,9 @@ def load_settings(args: argparse.Namespace) -> Settings:
         exec_timeout=env_float("EXEC_TIMEOUT_SECONDS", 2),
         openrouter_key=os.environ.get("OPENROUTER_API_KEY", "").strip(),
         openrouter_base=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/"),
+        openrouter_reasoning=env_bool("OPENROUTER_REASONING", False),
         ollama_base=os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/"),
+        ollama_think=env_bool("OLLAMA_THINK", False),
     )
 
 
@@ -317,12 +332,15 @@ class ChatClient:
                 "temperature": settings.temperature,
                 "messages": messages,
             }
+            if not settings.openrouter_reasoning:
+                payload["reasoning"] = {"enabled": False}
         else:
             url = f"{settings.ollama_base}/api/chat"
             headers = {"Content-Type": "application/json"}
             payload = {
                 "model": settings.model,
                 "stream": False,
+                "think": settings.ollama_think,
                 "format": "json",
                 "messages": messages,
                 "options": {"temperature": settings.temperature},
@@ -474,6 +492,22 @@ def source_diff(original: str, mutant: str, mutant_id: int) -> str:
             tofile=f"mutant_{mutant_id}",
         )
     )
+
+
+def load_id_list(path: Path) -> set[int]:
+    """Read one mutant number per line. A missing file means none were recorded."""
+    if not path.is_file():
+        return set()
+    ids: set[int] = set()
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        text = line.split("#", 1)[0].strip()
+        if not text:
+            continue
+        try:
+            ids.add(int(text))
+        except ValueError as exc:
+            raise SystemExit(f"{path}:{line_number} is not a mutant number") from exc
+    return ids
 
 
 def discover_mutants(mutants_dir: Path, session: str, first: int, last: int | None) -> list[int]:
@@ -646,6 +680,21 @@ def run_sweep(args: argparse.Namespace, settings: Settings) -> int:
     mutant_ids = discover_mutants(mutants_dir, args.session, args.first, last)
     if not mutant_ids:
         raise SystemExit("no mutant files matched this session and range")
+    anomalous_ids = load_id_list(mutants_dir / "anomalous.txt")
+    trivial_ids = load_id_list(mutants_dir / "equivalents-trivial.txt")
+    skipped_anomalous = sum(mutant_id in anomalous_ids for mutant_id in mutant_ids)
+    skipped_trivial = sum(
+        mutant_id in trivial_ids and mutant_id not in anomalous_ids for mutant_id in mutant_ids
+    )
+    mutant_ids = [
+        mutant_id
+        for mutant_id in mutant_ids
+        if mutant_id not in anomalous_ids and mutant_id not in trivial_ids
+    ]
+    eprint(f"skipped anomalous={skipped_anomalous} equivalent-trivial={skipped_trivial}")
+    if not mutant_ids:
+        eprint("nothing to ask")
+        return 0
 
     destination = output_path(args, settings)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -653,8 +702,13 @@ def run_sweep(args: argparse.Namespace, settings: Settings) -> int:
     pending = [mutant_id for mutant_id in mutant_ids if mutant_id not in done]
     original = original_path.read_text(encoding="utf-8")
 
+    if settings.provider == "ollama":
+        think = f"think={str(settings.ollama_think).lower()} "
+    else:
+        think = f"reasoning={str(settings.openrouter_reasoning).lower()} "
     eprint(
         f"provider={settings.provider} model={settings.model} temperature={settings.temperature} "
+        f"{think}"
         f"timeout={settings.api_timeout:g}s retries={settings.max_retries} "
         f"min_interval={settings.min_interval:g}s exec_timeout={settings.exec_timeout:g}s"
     )

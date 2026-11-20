@@ -1,0 +1,21 @@
+# Operators that can use a variable the original program only defined.
+# These mutants are checked for an uninitialized use. Every other operator is kept.
+#
+# Plain assignment (=) replaced by a compound assignment reads the left-hand side.
+58,u-OEAA
+59,u-OEBA
+60,u-OESA
+# Statement deletion can remove the assignment that defined the variable.
+94,u-SSDL
+# Another variable is substituted. The new name may have no definition.
+100,u-VGAR
+101,u-VGPR
+102,u-VGSR
+103,u-VGTR
+104,u-VLAR
+105,u-VLPR
+106,u-VLSR
+107,u-VLTR
+# Not listed: trap operators u-STRP, u-STRI, u-SSWM, u-SMTC, u-SMTT,
+# u-VDTR, u-VTWD. Compound-assignment replacements such as u-OAAA and
+# u-OAEA already read a variable the original program defined.

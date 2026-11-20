@@ -28,9 +28,12 @@ The script performs these steps in `--base-dir`:
 2. Create a Proteum test session named `--session`, with executable `runner`.
 3. Instrument the program and compile that version as `runner_instr`.
 4. Generate every unit mutant.
-5. Write the original program and each mutant, without the Proteum preamble, to `<base-dir>/mutants/`.
+5. Mark a data-flow mutant anomalous when `gcc` or `clang` reports that it uses an uninitialized variable. The checked operators are `u-OEAA`, `u-OEBA`, `u-OESA`, `u-SSDL`, and the variable-replacement operators `u-VGAR` through `u-VLTR`, listed in `scripts/dataflow-operators-list.txt`. Their numbers are written to `mutants/anomalous.txt`, one mutant number per line, and their sources are not saved.
+6. Compile each remaining mutant and the original program to object code with `gcc -std=gnu89` at no optimization, `-O`, `-O2`, and `-O3`. Both files are compiled under the same source name. A mutant whose object code matches the original at any of those settings is trivially equivalent. Its number is written to `mutants/equivalents-trivial.txt`, one mutant number per line, it is marked equivalent in the session, and its source is not saved.
+7. Write the original program and each remaining mutant, without the Proteum preamble, to `<base-dir>/mutants/`.
+8. Run `exemuta -exec -trace <session>` so the mutant database includes the anomalous and equivalent mutants, then write a test report with `report -tcase -L 447`. The file is `<session>_YYYYMMDD-HHMMSS.lst` in the program directory. Proteum adds the `.lst` suffix.
 
-`--functions` is a text file with one function name per line. The script keeps each source from the first line whose first word is one of those names. For factorial the file is `programs/factorial/functions.txt` and its only name is `main`.
+`--functions` is a text file with one function name per line. The script keeps each source from the line that defines one of those functions, such as `int main (void)`. For factorial the file is `programs/factorial/functions.txt` and its only name is `main`.
 
 ```bash
 scripts/container.sh python scripts/01-prepare-program.py \
@@ -40,7 +43,7 @@ scripts/container.sh python scripts/01-prepare-program.py \
   --functions programs/factorial/functions.txt
 ```
 
-The mutant files are `mutants/original_FACTORIAL.c` and `mutants/muta<N>_FACTORIAL.c`. Create the session once. Running it again in a directory that already has that session fails at `test-new`.
+The mutant files are `mutants/original_FACTORIAL.c` and `mutants/muta<N>_FACTORIAL.c`. `mutants/anomalous.txt` and `mutants/equivalents-trivial.txt` list the mutants left out of that set. `02-ask-equivalence.py` skips every mutant number in those files. Create the session once. Running it again in a directory that already has that session fails at `test-new`.
 
 ## 2. Ask whether a mutant is equivalent
 
@@ -55,6 +58,8 @@ If `equivalent` is false, the script compiles both programs and feeds `stdin` to
 The container's `gcc` is used. The script compiles with `-std=gnu89` and includes `tools/ProteumIM64/bin/proteum.h`, which supplies `__MAXINT__` and `__MININT__`.
 
 `--mutants-dir` and `--session` are required. The directory must contain `original_<session>.c` and `muta<N>_<session>.c`. Pass `--last` or `--all` as well. A command with neither flag stops before any API call.
+
+Mutant numbers listed in `anomalous.txt` or `equivalents-trivial.txt`, in the same directory, are not sent to the model. Those files hold one mutant number per line. A missing file skips nothing.
 
 ```bash
 # First three mutants (ids 0, 1, and 2) with the model from .env
@@ -95,6 +100,8 @@ scripts/container.sh python scripts/02-ask-equivalence.py \
 | `API_RETRY_BACKOFF_MAX_SECONDS` | Cap on that backoff |
 | `API_MIN_INTERVAL_SECONDS` | Pause after every completed call. `3.5` stays under 20 requests/minute |
 | `EXEC_TIMEOUT_SECONDS` | Time limit for each compiled program |
+| `OLLAMA_THINK` | `false` asks Ollama for the JSON answer without a reasoning trace. `true` allows it |
+| `OPENROUTER_REASONING` | `false` sends `reasoning.enabled=false`. `true` leaves the model's own default |
 
 A 429 waits for `Retry-After` or `X-RateLimit-Reset` when that wait is under two minutes. A longer wait, an authentication failure, or an out-of-credit response stops the sweep. Start the same command again to continue.
 
@@ -130,7 +137,7 @@ scripts/container.sh python scripts/03-export-results.py \
   --out testset
 ```
 
-The CSV columns are mutant number, operator, status, input, original output, mutant output, input tokens, output tokens, input cost, output cost, and time spent. The operator comes from `muta -l`.
+The CSV columns are mutant number, operator, status, input, original output, mutant output, input tokens, output tokens, input cost, output cost, and time spent. The operator comes from `muta -l`. Rows are sorted by mutant number. Mutants listed in `mutants/anomalous.txt` are included with status `anomalous`. Mutants listed in `mutants/equivalents-trivial.txt` are included with status `equivalent-trivial`. A mutant the model judged equivalent keeps the status `equivalent`. The two prepared statuses have empty input, output, token, cost, and time cells.
 
 ## 4. Run a test set
 

@@ -1,0 +1,74 @@
+
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[]
+[]                  PROGRAM TESTE: FACTORIAL
+[]----------------------------------------------------------
+[]   SOURCE FILE: factorial
+[]
+[]   TOTAL MUTANTS: 242
+[]
+[]   ANOMALOUS MUTANTS: 30
+[]
+[]   ACTIVE MUTANTS: 242
+[]
+[]   ALIVE MUTANTS: 48
+[]
+[]   EQUIVALENT MUTANTS: 2
+[]
+[]   MUTATION SCORE: 0.771429
+[]
+[]   OPERATORS:
+[]   u-Cccr              4    u-CCDL              2    u-Ccsr             12    
+[]   u-CRCR             30    u-OAAN              4    u-OABN              3    
+[]   u-OALN              2    u-OARN              6    u-OASN              2    
+[]   u-OCNG              2    u-OEAA             15    u-OEBA              9    
+[]   u-OESA              6    u-Oido              1    u-OODL              6    
+[]   u-ORAN             10    u-ORBN              6    u-ORLN              4    
+[]   u-ORRN             10    u-ORSN              4    u-SMTC              1    
+[]   u-SMTT              1    u-SMVB              2    u-SRSR             13    
+[]   u-SSDL             14    u-STRI              2    u-STRP             14    
+[]   u-SWDD              1    u-VDTR             18    u-VLSR             22    
+[]   u-VTWD             12    u-VVDL              4    
+[]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+Teste Case # 1
+	Number of Not Executed Mutants: 0
+	Number of Alive Mutants: 77
+	Number of Mutants Dead by Stdout: 92
+	Number of Mutants Dead by Retcode : 3
+	Number of Mutants Dead by Timeout: 14
+	Number of Mutants Dead by Trap: 23
+	Number of Mutants Avoided: 1
+	Number of Dead Mutants: 132
+	Enabled
+	Input:
+42
+
+	Output:
+Input a number followed by a return: 0
+
+	Stderr:
+
+_________________________________________________
+
+
+Teste Case # 2
+	Number of Not Executed Mutants: 132
+	Number of Alive Mutants: 47
+	Number of Mutants Dead by Stdout: 29
+	Number of Mutants Dead by Retcode : 0
+	Number of Mutants Dead by Timeout: 0
+	Number of Mutants Dead by Trap: 1
+	Number of Mutants Avoided: 1
+	Number of Dead Mutants: 30
+	Enabled
+	Input:
+4
+
+	Output:
+Input a number followed by a return: 24
+
+	Stderr:
+
+_________________________________________________
